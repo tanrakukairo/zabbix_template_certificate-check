@@ -1,0 +1,524 @@
+zabbix_export:
+  version: '7.0'
+  template_groups:
+    - uuid: 04bd2f00acec44228473c6798c8b41e0
+      name: Templates
+  templates:
+    - uuid: b13f3e616ad74dc3b502bb53968a3501
+      template: 'Certificate Check by ExternalCheck'
+      name: 'Certificate Check by ExternalCheck'
+      description: |
+        ExterrnalCheck for Certificate.
+        
+        get_certificate_information.py
+        Check: Python 3.11+
+        Require: pyOpenSSL
+      groups:
+        - name: Templates
+      items:
+        - uuid: 27da03163e7c4123ac2cf4004162b3f1
+          name: 'Common Name'
+          type: DEPENDENT
+          key: 'cert[cn]'
+          delay: '0'
+          history: 1w
+          value_type: CHAR
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.cn
+              error_handler: DISCARD_VALUE
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: bc2f8069811648218a8237966b172c44
+          name: 'Cert get: return code'
+          type: DEPENDENT
+          key: 'cert[code]'
+          delay: '0'
+          history: 1w
+          trends: '0'
+          valuemap:
+            name: 'Certificate Get Code'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.code
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '2'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+          triggers:
+            - uuid: 6685857e873b4e2ba663b6d8ba5d3388
+              expression: 'last(/Certificate Check by ExternalCheck/cert[code])<>0'
+              name: 'Failed certificate get'
+              priority: HIGH
+              manual_close: 'YES'
+        - uuid: d51447d22bb3491fb54e6c820c420e96
+          name: 'End Date'
+          type: DEPENDENT
+          key: 'cert[endDate]'
+          delay: '0'
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.endDate
+              error_handler: DISCARD_VALUE
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: df7a335689154fc29c6f4d3f951fca6f
+          name: 'Cert get: error text'
+          type: DEPENDENT
+          key: 'cert[error]'
+          delay: '0'
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.error
+              error_handler: DISCARD_VALUE
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: 0cc71120001a4d80bd554312be014553
+          name: Issuer
+          type: DEPENDENT
+          key: 'cert[issure]'
+          delay: '0'
+          history: 1w
+          value_type: CHAR
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.issuer
+              error_handler: DISCARD_VALUE
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: 3509dc96090a4b4b96369c2bead27723
+          name: 'Public Key Algorithm'
+          type: DEPENDENT
+          key: 'cert[publicKeyAlgorithm]'
+          delay: '0'
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.publicKeyAlgorithm
+              error_handler: DISCARD_VALUE
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: 9a050acf6aec46fdbb2b134f34ab02e0
+          name: 'Public Key Bits'
+          type: DEPENDENT
+          key: 'cert[publicKeyBits]'
+          delay: '0'
+          history: 1w
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.publicKeyBits
+              error_handler: DISCARD_VALUE
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: 0133409e870a45a79dd2272f1a428268
+          name: 'Serial Number'
+          type: DEPENDENT
+          key: 'cert[serialNumber]'
+          delay: '0'
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.serialNumber
+              error_handler: DISCARD_VALUE
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: 17683ca2bc144fd78649b576cfe53d38
+          name: 'Sigunature Algorithm'
+          type: DEPENDENT
+          key: 'cert[sigunatureAlgorithm]'
+          delay: '0'
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.sigunatureAlgorithm
+              error_handler: DISCARD_VALUE
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: e10f877ac7ec453f93242f8180252581
+          name: 'Start Date'
+          type: DEPENDENT
+          key: 'cert[startDate]'
+          delay: '0'
+          history: 1w
+          value_type: TEXT
+          trends: '0'
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.startDate
+              error_handler: DISCARD_VALUE
+            - type: DISCARD_UNCHANGED_HEARTBEAT
+              parameters:
+                - '86400'
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+        - uuid: 623ac2ab75294afd87b0a0bb5fc882e8
+          name: 'Time Left'
+          type: DEPENDENT
+          key: 'cert[timeleft]'
+          delay: '0'
+          history: 1w
+          trends: '0'
+          units: s
+          preprocessing:
+            - type: JSONPATH
+              parameters:
+                - $.data.timeLeft
+              error_handler: DISCARD_VALUE
+          master_item:
+            key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+          triggers:
+            - uuid: 7df68c3db4f34646a18f72c85950c7bd
+              expression: 'last(/Certificate Check by ExternalCheck/cert[timeleft])<= 0'
+              name: 'Certificate be expired.'
+              priority: DISASTER
+              manual_close: 'YES'
+              dependencies:
+                - name: 'Failed certificate get'
+                  expression: 'last(/Certificate Check by ExternalCheck/cert[code])<>0'
+            - uuid: ead1efe676804216b1c3458f8fc8f3a4
+              expression: 'last(/Certificate Check by ExternalCheck/cert[timeleft])<= 86400'
+              name: 'Certificate be expired after 1day.'
+              priority: HIGH
+              manual_close: 'YES'
+              dependencies:
+                - name: 'Failed certificate get'
+                  expression: 'last(/Certificate Check by ExternalCheck/cert[code])<>0'
+            - uuid: 8777fe797b0846da994f8a2c98351bda
+              expression: 'last(/Certificate Check by ExternalCheck/cert[timeleft])<=2592000'
+              name: 'Certificate be expired after 30day.'
+              priority: WARNING
+              manual_close: 'YES'
+              dependencies:
+                - name: 'Failed certificate get'
+                  expression: 'last(/Certificate Check by ExternalCheck/cert[code])<>0'
+        - uuid: 22387254c3f44ccea44e5c07d4fdb362
+          name: 'Cert get'
+          type: EXTERNAL
+          key: 'get_certificate_information.py[{$HOST.CONN},-p,{$CERT_PORT},-t,{$CERT_TYPE}]'
+          history: '0'
+          value_type: TEXT
+          trends: '0'
+      discovery_rules:
+        - uuid: d7119c8ab57545478d84170e9c401391
+          name: 'Certificate Discovery from CSV'
+          type: EXTERNAL
+          key: 'csv2json_lld.py[certificate_list]'
+          delay: 1h
+          status: DISABLED
+          description: |
+            csv2json_lld.py[ARG0] -> /var/lib/zabbix/conf.d/ARG0.csv
+            
+            certificate_list.csv:
+            --
+            endpoint,port,type
+            www.example.com,443,https
+            mail.example.com,587,smtp
+            --
+            endpoint:
+            IP or FQDN
+            
+            port:
+            port number
+            
+            type:
+            https: https/any over ssl
+            smtp: smtp starttls
+          item_prototypes:
+            - uuid: a5d34545ecd04396b3c4b77460da7c8c
+              name: 'Common Name'
+              type: DEPENDENT
+              key: 'cert[cn,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              value_type: TEXT
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.cn
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '86400'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: 3b8440f9136046569d01df9b713ca318
+              name: 'Cert get: return code'
+              type: DEPENDENT
+              key: 'cert[code,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              trends: '0'
+              valuemap:
+                name: 'Certificate Get Code'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.code
+                  error_handler: CUSTOM_VALUE
+                  error_handler_params: '2'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+              trigger_prototypes:
+                - uuid: d1b6db5c0e584c7499c526a6fe08e250
+                  expression: 'last(/Certificate Check by ExternalCheck/cert[code,{#ENDPOINT},{#PORT},{#TYPE}])<>0'
+                  name: 'Failed certificate get ({#TYPE}://{#ENDPOINT}:{#PORT})'
+                  priority: HIGH
+                  manual_close: 'YES'
+            - uuid: 90cbc2d00f2447ef840acd1279e4babd
+              name: 'End Date'
+              type: DEPENDENT
+              key: 'cert[endDate,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              value_type: TEXT
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.endDate
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '86400'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: 1aa6b624ed174705b5aa0ab18f40cf32
+              name: 'Cert get: error text'
+              type: DEPENDENT
+              key: 'cert[error,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              value_type: TEXT
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.error
+                  error_handler: DISCARD_VALUE
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: aa89424ea56f43b58a6d2b3e2dafadbf
+              name: Issuer
+              type: DEPENDENT
+              key: 'cert[issuer,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              value_type: TEXT
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.issuer
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '86400'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: c022a58aad814fe7ac12a8dffde9cadd
+              name: 'Public Key Algorithm'
+              type: DEPENDENT
+              key: 'cert[publicKeyAlgorithm,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              value_type: TEXT
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.publicKeyAlgorithm
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '86400'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: c795da4d34b24d93b4f2175b7540d1fe
+              name: 'Public Key Bits'
+              type: DEPENDENT
+              key: 'cert[publicKeyBits,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.publicKeyBits
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '86400'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: 88de06cdef094b43bce67e8b136262b0
+              name: 'Serial Number'
+              type: DEPENDENT
+              key: 'cert[serialNumber,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              value_type: TEXT
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.serialNumber
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '86400'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: ea89b396ef4442839fe376f294230d33
+              name: 'Sigunature Algorithm'
+              type: DEPENDENT
+              key: 'cert[sigunatureAlgorithm,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              value_type: TEXT
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.sigunatureAlgorithm
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '86400'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: 181a4f4c56d34d5db79b0e9ddc801077
+              name: 'Start Date'
+              type: DEPENDENT
+              key: 'cert[startDate,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              value_type: TEXT
+              trends: '0'
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.startDate
+                  error_handler: DISCARD_VALUE
+                - type: DISCARD_UNCHANGED_HEARTBEAT
+                  parameters:
+                    - '86400'
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+            - uuid: 1660b7c946564396b246b5d1097cd9e5
+              name: 'Time Left'
+              type: DEPENDENT
+              key: 'cert[timeLeft,{#ENDPOINT},{#PORT},{#TYPE}]'
+              delay: '0'
+              history: 1w
+              trends: '0'
+              units: s
+              preprocessing:
+                - type: JSONPATH
+                  parameters:
+                    - $.data.timeLeft
+                  error_handler: DISCARD_VALUE
+              master_item:
+                key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+              trigger_prototypes:
+                - uuid: e78772f4f8244ce6a66a4d26e3857a21
+                  expression: 'last(/Certificate Check by ExternalCheck/cert[timeLeft,{#ENDPOINT},{#PORT},{#TYPE}])<=0'
+                  name: 'Certificate({#TYPE}://{#ENDPOINT}:{#PORT}) be expired.'
+                  priority: DISASTER
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Failed certificate get ({#TYPE}://{#ENDPOINT}:{#PORT})'
+                      expression: 'last(/Certificate Check by ExternalCheck/cert[code,{#ENDPOINT},{#PORT},{#TYPE}])<>0'
+                - uuid: d99dd1f42eb54c049d22d3bde8ed9cfc
+                  expression: 'last(/Certificate Check by ExternalCheck/cert[timeLeft,{#ENDPOINT},{#PORT},{#TYPE}])<=86400'
+                  name: 'Certificate({#TYPE}://{#ENDPOINT}:{#PORT}) be expired after 1d.'
+                  priority: HIGH
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Failed certificate get ({#TYPE}://{#ENDPOINT}:{#PORT})'
+                      expression: 'last(/Certificate Check by ExternalCheck/cert[code,{#ENDPOINT},{#PORT},{#TYPE}])<>0'
+                - uuid: d6fb4cb049514fb08da3ba57facf6dc2
+                  expression: 'last(/Certificate Check by ExternalCheck/cert[timeLeft,{#ENDPOINT},{#PORT},{#TYPE}])<=2592000'
+                  name: 'Certificate({#TYPE}://{#ENDPOINT}:{#PORT}) be expired after 30d.'
+                  priority: WARNING
+                  manual_close: 'YES'
+                  dependencies:
+                    - name: 'Failed certificate get ({#TYPE}://{#ENDPOINT}:{#PORT})'
+                      expression: 'last(/Certificate Check by ExternalCheck/cert[code,{#ENDPOINT},{#PORT},{#TYPE}])<>0'
+            - uuid: 785b01a4beaa43e4978449d72d3c9c06
+              name: 'Cert get'
+              type: EXTERNAL
+              key: 'get_certificate_information.py[{#ENDPOINT},-p,{#PORT},-t{#TYPE}]'
+              delay: 5m
+              history: '0'
+              value_type: TEXT
+              trends: '0'
+          lld_macro_paths:
+            - lld_macro: '{#ENDPOINT}'
+              path: $.data.endpoint
+            - lld_macro: '{#PORT}'
+              path: $.data.port
+            - lld_macro: '{#TYPE}'
+              path: $.data.type
+      macros:
+        - macro: '{$CERT_PORT}'
+          value: '443'
+        - macro: '{$CERT_TYPE}'
+          value: https
+          description: 'https or smtp. "https" include ANY over SSL, "smtp" is "smtp over starttls"'
+      valuemaps:
+        - uuid: 7920545f570b44339c4e2c72e3cf8cbc
+          name: 'Certificate Get Code'
+          mappings:
+            - value: '0'
+              newvalue: OK
+            - value: '1'
+              newvalue: ERROR
+            - value: '2'
+              newvalue: FAILED

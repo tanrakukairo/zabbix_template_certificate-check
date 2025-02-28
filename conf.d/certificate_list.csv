@@ -1,0 +1,3 @@
+endpoint,port,type
+www.example.com,443,https
+mail.example.com,587,smtp
